@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JCal - Your go to calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .jcal-header {
+      width: 100vw;
+      padding: 0;
+      margin: 0 0 32px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      height: 70px;
+      background: linear-gradient(90deg, #6e8efb 0%, #a777e3 50%, #fd9536 100%);
+      box-shadow: 0 4px 18px #7367f022;
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+      animation: fadeIn 1.2s cubic-bezier(.33,1.11,.53,.96);
+    }
+    .jcal-header-title {
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      font-size: 2.1em;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      color: #fff;
+      background: linear-gradient(90deg, #fff 50%, #fd9536 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 1.5px 8px #6e8efb60, 0 1px 12px #a777e340;
+      margin: 0;
+      padding: 0 12px 0 12px;
+      user-select: none;
+      filter: drop-shadow(0 3px 12px #a777e333);
+    }
+    .container {
+      display: flex;
+      gap: 22px;
+      align-items: flex-start;
+      width: 700px;
+      max-width: 98vw;
+      margin-top: 110px;
+      margin-bottom: 40px;
+    }
+    .calculator {
+      background: rgba(34,34,34,0.98);
+      border-radius: 26px;
+      box-shadow: 0 16px 60px #0005, 0 0px 1.5px #fff3 inset;
+      padding: 32px 24px;
+      width: 340px;
+      max-width: 95vw;
+      backdrop-filter: blur(3.5px);
+      position: relative;
+      overflow: visible;
+      z-index: 1;
+    }
+    .calculator:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 28px;
+      border: 2px solid #ad99f9c0;
+      filter: blur(4px);
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.7;
+    }
+    .display {
+      background: linear-gradient(95deg, #191919 75%, #7367f04d 100%);
+      color: #fff;
+      font-size: 2.2em;
+      border-radius: 14px;
+      margin-bottom: 22px;
+      padding: 18px 14px;
+      text-align: right;
+      min-height: 50px;
+      letter-spacing: 2px;
+      overflow-x: auto;
+      box-shadow: 0 6px 24px #7367f01a, 0 1.5px 0 #fff2 inset;
+      border: 2.5px solid #7367f044;
+      transition: background 0.18s, border 0.16s, box-shadow 0.2s;
+      word-break: break-all;
+    }
+    .display:focus-visible {
+      outline: 2.5px solid #a777e3;
+      box-shadow: 0 0 0 4px #7367f033;
+      border-color: #a777e3;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+    button {
+      padding: 20px 0;
+      font-size: 1.18em;
+      border: none;
+      border-radius: 11px;
+      background: linear-gradient(115deg, #292929 70%, #313131 130%);
+      color: #fff;
+      cursor: pointer;
+      outline: none;
+      box-shadow: 0 3px 8px #0003, 0 1.5px 0 #fff2 inset;
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition:
+        background 0.22s cubic-bezier(.25,.1,.25,1),
+        color 0.17s,
+        box-shadow 0.27s cubic-bezier(.24,.4,.68,.99),
+        border 0.13s,
+        transform 0.08s cubic-bezier(.5,1.8,.4,.9);
+      border: 2px solid transparent;
+      will-change: transform, box-shadow;
+    }
+    button:active {
+      background: #444;
+      transform: scale(0.97) translateY(2px);
+      box-shadow: 0 0 0 #0000;
+      border-color: #7367f022;
+    }
+    button:focus-visible {
+      outline: 2.5px solid #b799ff;
+      box-shadow: 0 0 0 4px #a777e366;
+      border-color: #a777e3;
+    }
+    button .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple-animation 0.44s linear;
+      background: radial-gradient(circle, #fff8 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 10;
+    }
+    @keyframes ripple-animation {
+      to {
+        transform: scale(2.6);
+        opacity: 0;
+      }
+    }
+    button.pulse {
+      animation: btn-pulse 0.17s cubic-bezier(.33,1.21,.44,1.02);
+    }
+    @keyframes btn-pulse {
+      0%   { box-shadow: 0 0 0 0 #7367f0aa; }
+      70%  { box-shadow: 0 0 0 8px #7367f033; }
+      100% { box-shadow: 0 0 0 0 #7367f000; }
+    }
+    button.operator {
+      background: linear-gradient(115deg, #fd9536 78%, #fdcf36 140%);
+      color: #fff;
+      box-shadow: 0 2px 12px #fd953650, 0 1.5px 0 #fff3 inset;
+      border: 2px solid #fdcf3699;
+      text-shadow: 0 1px 2px #0004;
+    }
+    button.function {
+      background: linear-gradient(120deg, #42e695 60%, #3bb2b8 140%);
+      color: #222;
+      font-weight: bold;
+      border: 2px solid #42e69599;
+      text-shadow: 0 1px 2px #fff6;
+    }
+    button.function:active {
+      background: linear-gradient(120deg, #3bb2b8 60%, #42e695 140%);
+      border-color: #3bb2b8;
+    }
+    button.operator.active, button.operator:active {
+      background: linear-gradient(115deg, #f57900 75%, #fd9536 120%);
+      border-color: #fd9536;
+    }
+    button.equal {
+      background: linear-gradient(120deg, #7367f0 70%, #a777e3 120%);
+      color: #fff;
+      grid-column: span 2;
+      box-shadow: 0 4px 18px #7367f077, 0 1.5px 0 #fff3 inset;
+      font-weight: bold;
+      letter-spacing: 1px;
+      border: 2px solid #a777e3a8;
+    }
+    button.equal:active {
+      background: linear-gradient(120deg, #5447c6 70%, #a777e3 120%);
+      border-color: #7367f0;
+    }
+    button.clear {
+      background: linear-gradient(120deg, #e74c3c 70%, #fd9536 120%);
+      color: #fff;
+      box-shadow: 0 2px 12px #e74c3c30, 0 1.5px 0 #fff3 inset;
+      border: 2px solid #e74c3c99;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    button.clear:active {
+      background: linear-gradient(120deg, #c0392b 75%, #fd9536 120%);
+      border-color: #fd9536;
+    }
+    button.back {
+      background: linear-gradient(120deg, #888 70%, #444 130%);
+      color: #fff;
+      border: 2px solid #8884;
+    }
+    button.back:active {
+      background: linear-gradient(120deg, #555 70%, #222 130%);
+      border-color: #7367f033;
+    }
+    button:hover:not(:active),
+    button:focus-visible {
+      filter: brightness(1.18) saturate(1.23) drop-shadow(0 0 18px #fff3);
+      transform: translateY(-3px) scale(1.06) skewX(-1.5deg);
+      box-shadow: 0 10px 28px #7367f02a, 0 0 12px #fff3;
+      border-color: #7367f0cc;
+      z-index: 2;
+    }
+    /* HISTORY PANEL UI */
+    .history-panel {
+      background: rgba(255,255,255,0.96);
+      border-radius: 17px;
+      box-shadow: 0 4px 28px #7367f023, 0 0.5px 0 #fff2 inset;
+      padding: 19px 16px 12px 16px;
+      min-width: 280px;
+      max-width: 320px;
+      max-height: 430px;
+      overflow-y: auto;
+      font-size: 1.08em;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeIn 0.7s cubic-bezier(.33,1.11,.53,.96);
+      border: 2px solid #7367f01a;
+      position: relative;
+      z-index: 0;
+    }
+    .history-title {
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: #7367f0;
+      text-align: center;
+      letter-spacing: 1.2px;
+      font-size: 1.11em;
+      text-shadow: 0 1px 2px #a777e329;
+      opacity: 1;
+      animation: fadeIn 1.2s 0.1s backwards;
+      user-select: none;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 8px;
+      overflow-y: auto;
+      max-height: 320px;
+      padding-right: 2px;
+    }
+    .history-list {
+      scrollbar-width: thin;
+      scrollbar-color: #7367f077 #f5f5fa;
+    }
+    .history-list::-webkit-scrollbar {
+      width: 7px;
+    }
+    .history-list::-webkit-scrollbar-thumb {
+      background: #7367f055;
+      border-radius: 8px;
+    }
+    .history-list::-webkit-scrollbar-track {
+      background: #f5f5fa;
+    }
+    .history-entry {
+      position: relative;
+      background: linear-gradient(94deg, #f5f5fa 70%, #e2e2fa 130%);
+      border-radius: 13px;
+      padding: 11px 15px 10px 18px;
+      min-height: 54px;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+      animation: fadeIn 0.4s;
+      border: 2px solid #7367f01a;
+      box-shadow: 0 1.5px 6px #7367f018;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 12px;
+      overflow: visible;
+      z-index: 1;
+    }
+    .history-entry:before {
+      content: "";
+      display: block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 0px;
+      background: linear-gradient(135deg, #7367f0 60%, #a777e3 140%);
+      box-shadow: 0 0 8px #a777e344;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+    .history-entry:hover,
+    .history-entry:focus-visible {
+      background: linear-gradient(94deg, #e9e7ff 55%, #dcdcf9 130%);
+      transform: scale(1.045) translateX(5px);
+      box-shadow: 0 2px 12px #7367f045, 0 0 12px #7367f022 inset;
+      outline: 2px solid #7367f055;
+      border-color: #7367f0bb;
+      z-index: 2;
+    }
+    .history-expression {
+      color: #313131;
+      font-size: 1.01em;
+      letter-spacing: 0.3px;
+      font-weight: 500;
+      opacity: 0.88;
+      margin-right: auto;
+      word-break: break-all;
+      flex-basis: 55%;
+    }
+    .history-result {
+      color: #fff;
+      font-size: 1.18em;
+      text-align: right;
+      font-weight: bold;
+      text-shadow: 0 1.5px 2px #7367f0b2;
+      letter-spacing: 1.2px;
+      background: linear-gradient(110deg, #7367f0 70%, #a777e3 130%);
+      border-radius: 8px 16px 16px 8px;
+      padding: 3px 15px 3px 13px;
+      margin-left: 12px;
+      min-width: 60px;
+      box-shadow: 0 1.5px 7px #7367f03b;
+      border: 1.5px solid #7367f066;
+      transition: background 0.18s, box-shadow 0.18s, border 0.18s;
+      flex-shrink: 0;
+    }
+    .history-entry:hover .history-result,
+    .history-entry:focus-visible .history-result {
+      background: linear-gradient(110deg, #a777e3 60%, #7367f0 140%);
+      border-color: #a777e3cc;
+    }
+    .history-entry-reuse {
+      position: absolute;
+      right: 42px;
+      bottom: 10px;
+      font-size: 0.98em;
+      color: #a777e3;
+      opacity: 0.7;
+      pointer-events: none;
+      user-select: none;
+      font-style: italic;
+      letter-spacing: .5px;
+      display: none;
+    }
+    .history-entry:hover .history-entry-reuse,
+    .history-entry:focus-visible .history-entry-reuse {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    .history-delete-btn {
+      background: none;
+      border: none;
+      position: absolute;
+      right: 9px;
+      top: 9px;
+      color: #e74c3c;
+      font-size: 1.2em;
+      cursor: pointer;
+      padding: 5px 5px 3px 5px;
+      border-radius: 50%;
+      opacity: 0.7;
+      transition: background 0.15s, color 0.12s, opacity 0.11s;
+      z-index: 10;
+      outline: none;
+      box-shadow: none;
+    }
+    .history-delete-btn:hover,
+    .history-delete-btn:focus-visible {
+      background: #fd9536;
+      color: #fff;
+      opacity: 1;
+      outline: 2px solid #e74c3c44;
+    }
+    .history-empty {
+      background: #fcfaff;
+      border-radius: 7px;
+      cursor: default;
+      color: #aaa;
+      text-align: center;
+      padding: 14px 0;
+      font-size: 1em;
+      margin: 10px 0;
+      user-select: none;
+      border: 1.5px dashed #7367f033;
+    }
+    .history-clear {
+      background: linear-gradient(120deg, #e74c3c 70%, #fd9536 120%);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      margin: 10px auto 0;
+      padding: 8px 22px 7px 22px;
+      cursor: pointer;
+      font-size: 1.05em;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 3px 12px #e74c3c26, 0 1.5px 0 #fff2 inset;
+      transition: background 0.16s, transform 0.14s, box-shadow 0.16s;
+      display: block;
+      border: 2px solid #e74c3c55;
+    }
+    .history-clear:hover,
+    .history-clear:focus-visible {
+      background: linear-gradient(120deg, #c0392b 75%, #fd9536 120%);
+      transform: scale(1.06) translateY(-2px);
+      box-shadow: 0 6px 18px #e74c3c34;
+      border-color: #fd9536;
+    }
+    .footer {
+      width: 100vw;
+      text-align: center;
+      padding: 16px 0 12px 0;
+      font-size: 1.12em;
+      font-weight: 500;
+      letter-spacing: 1.1px;
+      color: #fff;
+      margin-top: 8px;
+      background: linear-gradient(90deg, #6e8efb 0%, #a777e3 50%, #fd9536 100%);
+      box-shadow: 0 -4px 18px #7367f022;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      user-select: none;
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 101;
+      opacity: 0.95;
+    }
+    .footer .heart {
+      color: #e74c3c;
+      font-size: 1.2em;
+      padding: 0 2px 0 1px;
+      vertical-align: middle;
+      animation: heartbeat 1.4s infinite;
+      display: inline-block;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1);}
+      10% { transform: scale(1.12);}
+      24% { transform: scale(1.20);}
+      33% { transform: scale(1.10);}
+      42% { transform: scale(1.22);}
+      48% { transform: scale(1);}
+      70% { transform: scale(1);}
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(50px) scale(0.98);}
+      to { opacity: 1; transform: translateY(0) scale(1);}
+    }
+    @media (max-width: 820px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+        width: 100vw;
+        gap: 16px;
+      }
+      .history-panel {
+        max-width: 98vw;
+      }
+      .jcal-header {
+        font-size: 0.82em;
+        height: 64px;
+      }
+      .footer {
+        font-size: 0.98em;
+        padding: 12px 0 10px 0;
+      }
+    }
+    @media (max-width: 480px) {
+      .calculator { padding: 12px 2vw; }
+      .display { font-size: 1.3em; padding: 8px 4px; }
+      button { padding: 10px 0; font-size: 1em; }
+      .history-panel { font-size: 0.95em; }
+      .history-list { max-height: 140px; }
+      .container { margin-top: 80px; }
+      .jcal-header { height: 56px; font-size: 0.76em; }
+      .footer { font-size: 0.90em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="jcal-header">
+    <span class="jcal-header-title">JCal</span>
+  </div>
+  <div class="container">
+    <div class="calculator" role="region" aria-label="Calculator">
+      <div class="display" id="display" aria-live="polite" tabindex="0">0</div>
+      <div class="buttons">
+        <button class="clear" onclick="clearDisplay()" title="Clear">C</button>
+        <button class="back" onclick="backspace()" title="Backspace">⌫</button>
+        <button class="operator" onclick="press('(')" title="Left Parenthesis">(</button>
+        <button class="operator" onclick="press(')')" title="Right Parenthesis">)</button>
+        <button onclick="press('7')">7</button>
+        <button onclick="press('8')">8</button>
+        <button onclick="press('9')">9</button>
+        <button class="operator" onclick="press('/')" title="Divide">÷</button>
+        <button class="function" onclick="press('sqrt(')" title="Square Root">√</button>
+        <button onclick="press('4')">4</button>
+        <button onclick="press('5')">5</button>
+        <button onclick="press('6')">6</button>
+        <button class="operator" onclick="press('*')" title="Multiply">×</button>
+        <button class="function" onclick="press('^')" title="Exponent">^</button>
+        <button onclick="press('1')">1</button>
+        <button onclick="press('2')">2</button>
+        <button onclick="press('3')">3</button>
+        <button class="operator" onclick="press('-')" title="Subtract">−</button>
+        <button class="function" onclick="press('sin(')" title="Sine">sin</button>
+        <button onclick="press('0')">0</button>
+        <button onclick="press('.')">.</button>
+        <button class="equal" onclick="calculate()" title="Equals">=</button>
+        <button class="operator" onclick="press('+')" title="Add">+</button>
+        <button class="function" onclick="press('cos(')" title="Cosine">cos</button>
+        <button class="function" onclick="press('tan(')" title="Tangent">tan</button>
+        <button class="function" onclick="press('log(')" title="Logarithm">log</button>
+        <button class="function" onclick="press('ln(')" title="Natural Log">ln</button>
+        <button class="function" onclick="press('pi')" title="Pi">π</button>
+      </div>
+    </div>
+    <div class="history-panel" id="history-panel">
+      <div class="history-title">History</div>
+      <div class="history-list" id="history-list">
+        <!-- History entries will be inserted here -->
+      </div>
+      <button class="history-clear" onclick="clearHistory()">Clear History</button>
+    </div>
+  </div>
+  <div class="footer">
+    Made with <span class="heart">♥</span> by AR
+  </div>
+  <script>
+    const display = document.getElementById('display');
+    const historyPanel = document.getElementById('history-panel');
+    const historyList = document.getElementById('history-list');
+    let expression = '';
+    let lastInput = '';
+    let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+
+    // Button effects
+    document.querySelectorAll('.buttons button, .history-clear').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        let oldRipple = btn.querySelector('.ripple');
+        if (oldRipple) oldRipple.remove();
+        let ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        let rect = btn.getBoundingClientRect();
+        let size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+        btn.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove());
+        btn.classList.remove('pulse');
+        void btn.offsetWidth;
+        btn.classList.add('pulse');
+      });
+      btn.addEventListener('keydown', function(e) {
+        if ([' ', 'Enter'].includes(e.key)) {
+          btn.classList.add('kbd-bounce');
+        }
+      });
+      btn.addEventListener('animationend', function(e) {
+        if (e.animationName === 'kbd-bounce') {
+          btn.classList.remove('kbd-bounce');
+        }
+      });
+    });
+    const style = document.createElement('style');
+    style.innerHTML = `
+    @keyframes kbd-bounce {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.11); }
+      60%  { transform: scale(0.90);}
+      100% { transform: scale(1);}
+    }
+    .kbd-bounce { animation: kbd-bounce 0.16s; }
+    `;
+    document.head.appendChild(style);
+
+    function updateDisplay(val = expression) {
+      display.innerText = val || '0';
+    }
+
+    function press(value) {
+      if (display.innerText === 'Error') {
+        expression = '';
+      }
+      const operators = ['+', '-', '*', '/', '^'];
+      if (operators.includes(value)) {
+        if (expression === '' || operators.includes(lastInput) || lastInput === '(') return;
+      }
+      if (value === '.') {
+        const parts = expression.split(/[\+\-\*\/\(\)\^]/);
+        if (parts[parts.length - 1].includes('.')) return;
+        if (lastInput === '' || operators.includes(lastInput) || lastInput === '(') {
+          expression += '0';
+        }
+      }
+      if (value === '(') {
+        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) expression += '*';
+      }
+      if (value === ')') {
+        if ((expression.match(/\(/g) || []).length <= (expression.match(/\)/g) || []).length) return;
+        if (operators.includes(lastInput) || lastInput === '(' || lastInput === '') return;
+      }
+      // Add * before function if needed
+      if (/^(sqrt|sin|cos|tan|log|ln)$/.test(value.replace('(',''))) {
+        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) expression += '*';
+      }
+      // Pi constant
+      if (value === 'pi') {
+        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) expression += '*';
+        value = 'π';
+      }
+      expression += value;
+      lastInput = value.endsWith('(') ? '(' : value.slice(-1);
+      updateDisplay();
+    }
+
+    function safeEval(expr) {
+      // Replace π with Math.PI, ^ with Math.pow, sqrt(, sin( etc with Math functions, log/ln, etc.
+      let safe = expr
+        .replace(/π/g, 'Math.PI')
+        .replace(/([0-9\.]+)\^([0-9\.]+)/g, 'Math.pow($1,$2)')
+        .replace(/(\d+|\))\s*sqrt\(/g, '$1*Math.sqrt(')
+        .replace(/sqrt\(/g, 'Math.sqrt(')
+        .replace(/(\d+|\))\s*sin\(/g, '$1*Math.sin(')
+        .replace(/sin\(/g, 'Math.sin((Math.PI/180)*') // degrees
+        .replace(/(\d+|\))\s*cos\(/g, '$1*Math.cos(')
+        .replace(/cos\(/g, 'Math.cos((Math.PI/180)*')
+        .replace(/(\d+|\))\s*tan\(/g, '$1*Math.tan(')
+        .replace(/tan\(/g, 'Math.tan((Math.PI/180)*')
+        .replace(/log\(/g, 'Math.log10(')
+        .replace(/ln\(/g, 'Math.log(');
+
+      safe = safe.replace(/([0-9\.]+)\^([0-9\.]+)/g, 'Math.pow($1,$2)');
+
+      // fix for nested deg functions, e.g. sin(30+cos(30))
+      safe = safe.replace(/Math\.sin\(\((Math\.PI\/180)\*([^\(\)]+)\)/g, (m, pi, inside) => {
+        return 'Math.sin((Math.PI/180)*(' + inside + '))';
+      });
+      safe = safe.replace(/Math\.cos\(\((Math\.PI\/180)\*([^\(\)]+)\)/g, (m, pi, inside) => {
+        return 'Math.cos((Math.PI/180)*(' + inside + '))';
+      });
+      safe = safe.replace(/Math\.tan\(\((Math\.PI\/180)\*([^\(\)]+)\)/g, (m, pi, inside) => {
+        return 'Math.tan((Math.PI/180)*(' + inside + '))';
+      });
+
+      return Function('"use strict";return (' + safe + ')')();
+    }
+
+    function calculate() {
+      try {
+        if (expression === '') return;
+        if ((expression.match(/\(/g) || []).length !== (expression.match(/\)/g) || []).length) {
+          display.innerText = 'Error';
+          expression = '';
+          return;
+        }
+        let result = safeEval(expression);
+        if (typeof result === 'number') result = +result.toFixed(10);
+        if (result === Infinity || isNaN(result)) {
+          display.innerText = 'Error';
+        } else {
+          display.innerText = result;
+          addToHistory(expression, result);
+          expression = result.toString();
+        }
+        lastInput = '';
+      } catch {
+        display.innerText = 'Error';
+        expression = '';
+        lastInput = '';
+      }
+    }
+
+    function clearDisplay() {
+      expression = '';
+      lastInput = '';
+      updateDisplay();
+    }
+
+    function backspace() {
+      if (display.innerText === 'Error') {
+        clearDisplay();
+        return;
+      }
+      let funcs = ['sqrt(', 'sin(', 'cos(', 'tan(', 'log(', 'ln('];
+      for (let f of funcs) {
+        if (expression.endsWith(f)) {
+          expression = expression.slice(0, -f.length);
+          lastInput = expression.slice(-1);
+          updateDisplay();
+          return;
+        }
+      }
+      if (expression.endsWith('π')) {
+        expression = expression.slice(0, -1);
+        lastInput = expression.slice(-1);
+        updateDisplay();
+        return;
+      }
+      expression = expression.slice(0, -1);
+      lastInput = expression.slice(-1);
+      updateDisplay();
+    }
+
+    window.addEventListener('keydown', function(e) {
+      if (e.key >= '0' && e.key <= '9') press(e.key);
+      else if (['+', '-', '*', '/', '^'].includes(e.key)) press(e.key);
+      else if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); calculate(); }
+      else if (e.key === '.') press('.');
+      else if (e.key === '(') press('(');
+      else if (e.key === ')') press(')');
+      else if (e.key === 'Backspace') backspace();
+      else if (e.key.toLowerCase() === 'c') clearDisplay();
+      else if (e.key.toLowerCase() === 's') press('sin(');
+      else if (e.key.toLowerCase() === 'q') press('sqrt(');
+      else if (e.key.toLowerCase() === 'l') press('log(');
+      else if (e.key.toLowerCase() === 'n') press('ln(');
+      else if (e.key.toLowerCase() === 'p') press('pi');
+      else if (e.key.toLowerCase() === 't') press('tan(');
+      else if (e.key.toLowerCase() === 'o') press('cos(');
+    });
+
+    function addToHistory(expr, res) {
+      if (typeof res === "undefined" || res === "") return;
+      history.push({expr, res});
+      if (history.length > 50) history.shift();
+      localStorage.setItem('calcHistory', JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = "";
+      if (!history.length) {
+        let emptyNote = document.createElement('div');
+        emptyNote.className = 'history-empty';
+        emptyNote.innerHTML = 'No history yet';
+        historyList.appendChild(emptyNote);
+        return;
+      }
+      history.slice().reverse().forEach(({expr, res}, idx) => {
+        let div = document.createElement('div');
+        div.className = 'history-entry';
+        div.tabIndex = 0;
+        div.setAttribute('title', 'Click to reuse');
+        div.innerHTML = `
+          <span class="history-expression">${expr}</span>
+          <span class="history-result">${res}</span>
+          <span class="history-entry-reuse">Click to reuse</span>
+          <button class="history-delete-btn" title="Delete">&#128465;</button>
+        `;
+        div.onclick = (e) => {
+          if (e.target.classList.contains('history-delete-btn')) return;
+          expression = expr;
+          lastInput = expr.slice(-1);
+          updateDisplay(expr);
+          div.animate([
+            { background: '#e9e7ff' },
+            { background: '#f5f5fa' }
+          ], { duration: 260, fill: 'forwards' });
+        };
+        div.onkeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            div.click();
+            e.preventDefault();
+          }
+        }
+        div.querySelector('.history-delete-btn').onclick = (e) => {
+          e.stopPropagation();
+          let realIdx = history.length - 1 - idx;
+          history.splice(realIdx, 1);
+          localStorage.setItem('calcHistory', JSON.stringify(history));
+          renderHistory();
+        };
+        historyList.appendChild(div);
+      });
+    }
+
+    function clearHistory() {
+      history = [];
+      localStorage.setItem('calcHistory', '[]');
+      renderHistory();
+    }
+
+    renderHistory();
+  </script>
+</body>
+</html>
