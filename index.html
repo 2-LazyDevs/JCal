@@ -25,7 +25,21 @@
       --text-color: #fff;
       --history-result-bg: linear-gradient(110deg, #7367f0 70%, #a777e3 130%);
       --memory-bg: #fff4;
+      
+      /* Responsive variables */
+      --header-height: 70px;
+      --container-gap: 26px;
+      --button-size-desktop: 62px;
+      --button-size-tablet: 56px;
+      --button-size-mobile: 48px;
+      --button-height-desktop: 48px;
+      --button-height-tablet: 46px;
+      --button-height-mobile: 44px;
+      --font-size-desktop: 1.18em;
+      --font-size-tablet: 1.1em;
+      --font-size-mobile: 1em;
     }
+
     [data-theme='light'] {
       --main-bg: linear-gradient(135deg,#e0ecff,#fbeaff);
       --header-bg: linear-gradient(90deg, #fbeaff 0%, #a777e3 50%, #fd9536 100%);
@@ -37,6 +51,7 @@
       --history-result-bg: linear-gradient(110deg, #a777e3 70%, #7367f0 130%);
       --memory-bg: #e0ecff;
     }
+
     [data-theme='dark'] {
       --main-bg: linear-gradient(135deg, #1b1938, #3a2a71);
       --header-bg: linear-gradient(90deg, #222 0%, #444 60%, #7367f0 100%);
@@ -48,6 +63,7 @@
       --history-result-bg: linear-gradient(110deg, #7367f0 70%, #a777e3 130%);
       --memory-bg: #444a;
     }
+
     [data-theme='neon'] {
       --main-bg: linear-gradient(135deg, #0f2027, #2c5364);
       --header-bg: linear-gradient(90deg, #12c2e9 0%, #c471f5 50%, #fa709a 100%);
@@ -59,6 +75,11 @@
       --history-result-bg: linear-gradient(110deg, #12c2e9 60%, #fa709a 140%);
       --memory-bg: #fa709a55;
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       background: var(--main-bg);
       color: var(--text-color);
@@ -68,23 +89,29 @@
       flex-direction: column;
       align-items: center;
       transition: background 0.3s;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow-x: hidden;
     }
+
     .jcal-header {
-      width: 100vw;
+      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 70px;
+      height: var(--header-height);
       background: var(--header-bg);
       box-shadow: 0 4px 18px #7367f022;
       border-bottom-left-radius: 24px;
       border-bottom-right-radius: 24px;
       margin-bottom: 0;
       z-index: 10;
-      padding: 0 32px;
+      padding: 0 max(16px, 5vw);
+      position: sticky;
+      top: 0;
     }
+
     .jcal-header-title {
-      font-size: 2.1em;
+      font-size: clamp(1.4rem, 4vw, 2.1rem);
       font-weight: 800;
       letter-spacing: 2.5px;
       background-clip: text;
@@ -96,26 +123,42 @@
       padding: 0 12px;
       user-select: none;
     }
+
     #theme-select {
       border-radius: 10px;
-      padding: 5px 15px;
-      font-size: 1em;
+      padding: 8px 24px 8px 12px;
+      font-size: clamp(0.85rem, 2vw, 1rem);
       border: none;
       margin-left: 12px;
       outline: none;
       background: #fff8;
       color: #3a2a71;
       font-weight: 600;
+      min-width: 100px;
+      letter-spacing: 0.5px;
+      /* Custom dropdown arrow */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: 
+        url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 16px;
     }
+
     #instances {
       display: flex;
       align-items: center;
-      padding: 12px 0 0 0;
-      width: 700px;
-      max-width: 98vw;
+      justify-content: center;
+      padding: 12px 16px;
+      width: 100%;
+      max-width: 1200px;
       gap: 14px;
       margin-top: 10px;
+      flex-wrap: wrap;
     }
+
     #instances button {
       border-radius: 8px;
       border: none;
@@ -124,17 +167,28 @@
       font-weight: bold;
       margin-right: 8px;
       padding: 7px 17px;
-      font-size: 1em;
+      font-size: clamp(0.85rem, 2vw, 1rem);
       cursor: pointer;
       box-shadow: 0 2px 8px #7367f033;
       transition: background 0.18s, box-shadow 0.14s;
+      min-height: 40px;
+      touch-action: manipulation;
     }
+
+    #instance-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
     #instance-tabs span {
       display: inline-flex;
       align-items: center;
       margin-right: 6px;
       margin-bottom: 2px;
     }
+
     #instance-tabs button {
       background: #fff3;
       color: var(--accent);
@@ -144,57 +198,70 @@
       margin-right: 2px;
       margin-bottom: 0;
       padding: 7px 13px;
-      font-size: 1em;
+      font-size: clamp(0.85rem, 2vw, 1rem);
       border-radius: 8px;
       cursor: pointer;
+      min-height: 40px;
+      touch-action: manipulation;
     }
+
     #instance-tabs button.active {
       background: var(--accent);
       color: #fff;
     }
+
     #instance-tabs .delete-instance-btn {
       background: none;
       color: #e74c3c;
       font-size: 1.1em;
       border: none;
-      padding: 0 4px;
+      padding: 4px 8px;
       margin-left: 2px;
       cursor: pointer;
       border-radius: 6px;
       transition: background 0.14s;
+      min-height: 32px;
+      min-width: 32px;
     }
+
     #instance-tabs .delete-instance-btn:hover {
       background: #e74c3c22;
     }
+
     .container {
       display: flex;
-      gap: 26px;
-      align-items: flex-start;
-      width: 700px;
-      max-width: 98vw;
-      margin-top: 24px;
-      margin-bottom: 40px;
+      flex-direction: row;
+      gap: var(--container-gap);
+      align-items: start;
+      justify-content: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 24px auto 40px;
+      padding: 0 16px;
       position: relative;
       z-index: 1;
     }
+
     .calculator {
       background: var(--calc-bg);
       border-radius: var(--calc-card-radius);
       box-shadow: 0 16px 60px #0005, 0 0px 1.5px #fff3 inset;
-      padding: 30px 28px;
-      width: 410px;
-      max-width: 98vw;
+      padding: clamp(20px, 5vw, 30px);
+      width: 100%;
+      max-width: 500px;
       backdrop-filter: blur(3.5px);
       position: relative;
       z-index: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
+      flex-shrink: 0;
     }
+
     .display {
       background: var(--display-bg);
       color: var(--text-color);
-      font-size: 2.25em;
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
       border-radius: 14px;
       margin-bottom: 22px;
       padding: 18px 14px;
@@ -207,96 +274,145 @@
       word-break: break-all;
       width: 100%;
       transition: box-shadow .18s, border .18s;
+      scrollbar-width: thin;
+      scrollbar-color: #7367f077 transparent;
     }
+
+    .display::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .display::-webkit-scrollbar-thumb {
+      background: #7367f055;
+      border-radius: 2px;
+    }
+
     .memory-row {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr) auto;
       align-items: center;
       background: var(--memory-bg);
-      padding: 7px 8px 7px 8px;
+      padding: 7px 8px;
       border-radius: 9px;
       margin-bottom: 12px;
       width: 100%;
       box-sizing: border-box;
       gap: 8px;
     }
+
     .memory-row button {
       background: var(--btn-bg);
       color: var(--text-color);
       border: 2px solid #7367f0aa;
       border-radius: 7px;
       font-weight: 700;
-      font-size: 1.01em;
-      padding: 6px 12px;
+      font-size: clamp(0.9rem, 2vw, 1.01rem);
+      padding: 8px 6px;
       cursor: pointer;
-      margin: 0 2px;
       transition: background 0.18s, color 0.14s, border 0.12s;
+      min-height: 40px;
+      touch-action: manipulation;
     }
+
     .memory-value {
       font-weight: bold;
-      font-size: 1.07em;
+      font-size: clamp(1rem, 2.5vw, 1.07rem);
       color: var(--accent);
-      margin-left: 10px;
-      margin-right: 0;
-      min-width: 48px;
       text-align: right;
       letter-spacing: 1px;
+      padding: 0 4px;
     }
+
     .keypad-wrapper {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto;
       width: 100%;
       gap: 10px;
-      align-items: flex-start;
+      align-items: start;
       margin-bottom: 0;
     }
-    .numpad, .opspad {
+
+    .numpad {
       display: grid;
-      gap: 11px;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(7, 1fr);
+      gap: 8px;
       border-radius: 18px;
       background: rgba(255,255,255,0.04);
       box-shadow: 0 2px 16px #7367f018;
       padding: 16px 10px;
     }
-    .numpad {
-      grid-template-columns: repeat(3, 62px);
-      grid-template-rows: repeat(5, 48px);
-      justify-items: stretch;
-      align-items: stretch;
-    }
+
     .opspad {
-      grid-template-columns: 62px;
-      grid-template-rows: repeat(8, 48px);
-      justify-items: stretch;
-      align-items: stretch;
-      margin-left: 5px;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(7, 1fr);
+      gap: 8px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      box-shadow: 0 2px 16px #7367f018;
+      padding: 16px 10px;
+      min-width: 70px;
     }
+
     .numpad button, .opspad button {
       width: 100%;
-      height: 100%;
+      height: var(--button-height-desktop);
+      min-height: 40px;
+      font-size: var(--font-size-desktop);
     }
+
     .function, .operator, .clear, .equal, .back {
       font-weight: bold;
     }
-    .function { background: var(--function-bg); color: #222; border: 2px solid #42e69599;}
-    .function:active { background: linear-gradient(120deg, #3bb2b8 60%, #42e695 140%);}
-    .operator { background: var(--operator-bg); color: #fff; border: 2px solid #fdcf3699;}
-    .operator:active { background: linear-gradient(115deg, #f57900 75%, #fd9536 120%);}
-    .equal { background: var(--equal-bg); color: #fff; border: 2px solid #a777e3a8;}
-    .equal:active { background: linear-gradient(120deg, #5447c6 70%, #a777e3 120%);}
-    .clear { background: linear-gradient(120deg, #e74c3c 70%, #fd9536 120%); color: #fff; border: 2px solid #e74c3c99;}
-    .clear:active { background: linear-gradient(120deg, #c0392b 75%, #fd9536 120%);}
-    .back { background: linear-gradient(120deg, #888 70%, #444 130%); color: #fff; border: 2px solid #8884;}
-    .back:active { background: linear-gradient(120deg, #555 70%, #222 130%);}
-    .numpad button:hover, .opspad button:hover, .numpad button:focus-visible, .opspad button:focus-visible {
-      filter: brightness(1.18) saturate(1.23) drop-shadow(0 0 18px #fff3);
-      transform: translateY(-3px) scale(1.06);
-      box-shadow: 0 8px 24px #7367f022, 0 0 12px #fff3;
-      border-color: #7367f0cc;
-      z-index: 2;
+
+    .function { 
+      background: var(--function-bg); 
+      color: #222; 
+      border: 2px solid #42e69599;
     }
+    .function:active { 
+      background: linear-gradient(120deg, #3bb2b8 60%, #42e695 140%);
+    }
+
+    .operator { 
+      background: var(--operator-bg); 
+      color: #fff; 
+      border: 2px solid #fdcf3699;
+    }
+    .operator:active { 
+      background: linear-gradient(115deg, #f57900 75%, #fd9536 120%);
+    }
+
+    .equal { 
+      background: var(--equal-bg); 
+      color: #fff; 
+      border: 2px solid #a777e3a8;
+    }
+    .equal:active { 
+      background: linear-gradient(120deg, #5447c6 70%, #a777e3 120%);
+    }
+
+    .clear { 
+      background: linear-gradient(120deg, #e74c3c 70%, #fd9536 120%); 
+      color: #fff; 
+      border: 2px solid #e74c3c99;
+    }
+    .clear:active { 
+      background: linear-gradient(120deg, #c0392b 75%, #fd9536 120%);
+    }
+
+    .back { 
+      background: linear-gradient(120deg, #888 70%, #444 130%); 
+      color: #fff; 
+      border: 2px solid #8884;
+    }
+    .back:active { 
+      background: linear-gradient(120deg, #555 70%, #222 130%);
+    }
+
     button {
       padding: 0;
-      font-size: 1.18em;
       border-radius: 12px;
       transition: background 0.18s, color 0.14s, box-shadow 0.18s, border 0.13s, transform 0.09s;
       border: 2px solid transparent;
@@ -306,7 +422,22 @@
       box-shadow: 0 2px 8px #0002;
       position: relative;
       will-change: transform, box-shadow;
+      touch-action: manipulation;
     }
+
+    button:hover, button:focus-visible {
+      filter: brightness(1.18) saturate(1.23) drop-shadow(0 0 18px #fff3);
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 24px #7367f022, 0 0 12px #fff3;
+      border-color: #7367f0cc;
+      z-index: 2;
+    }
+
+    button:active {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.05s;
+    }
+
     button .ripple {
       position: absolute;
       border-radius: 50%;
@@ -316,86 +447,43 @@
       pointer-events: none;
       z-index: 10;
     }
+
     @keyframes ripple-animation {
       to {
         transform: scale(2.6);
         opacity: 0;
       }
     }
+
     button.pulse {
       animation: btn-pulse 0.17s cubic-bezier(.33,1.21,.44,1.02);
     }
+
     @keyframes btn-pulse {
       0%   { box-shadow: 0 0 0 0 #7367f0aa; }
       70%  { box-shadow: 0 0 0 8px #7367f033; }
       100% { box-shadow: 0 0 0 0 #7367f000; }
     }
-    .footer {
-      width: 100vw;
-      text-align: center;
-      padding: 16px 0 12px 0;
-      font-size: 1.12em;
-      font-weight: 500;
-      letter-spacing: 1.1px;
-      color: #fff;
-      margin-top: 8px;
-      background: var(--footer-bg);
-      box-shadow: 0 -4px 18px #7367f022;
-      border-top-left-radius: 24px;
-      border-top-right-radius: 24px;
-      user-select: none;
-      position: relative;
-      z-index: 11;
-      opacity: 0.97;
-      margin-bottom: 0;
-    }
-    .footer .heart {
-      color: #e74c3c;
-      font-size: 1.2em;
-      padding: 0 2px 0 1px;
-      vertical-align: middle;
-      animation: heartbeat 1.4s infinite;
-      display: inline-block;
-    }
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1);}
-      10% { transform: scale(1.12);}
-      24% { transform: scale(1.20);}
-      33% { transform: scale(1.10);}
-      42% { transform: scale(1.22);}
-      48% { transform: scale(1);}
-      70% { transform: scale(1);}
-    }
-    @media (max-width: 900px) {
-      .container { flex-direction: column; align-items: center; margin-top: 70px; }
-      .calculator { width: 97vw; max-width: 97vw; }
-      .keypad-wrapper { flex-direction: column; gap: 10px;}
-      .numpad, .opspad { grid-template-columns: repeat(3, 1fr); }
-      .opspad { grid-template-columns: repeat(4, 1fr);}
-      .history-panel { min-width: 95vw; max-width: 95vw; }
-    }
-    @media (max-width: 480px) {
-      .container { margin-top: 16vw; }
-      .jcal-header { height: 56px; font-size: 0.76em; }
-      .footer { font-size: 0.90em; }
-    }
-    /* History panel, history-entry, etc. as in previous code */
+
     .history-panel {
       background: var(--panel-bg);
       border-radius: var(--panel-radius);
       box-shadow: 0 4px 28px #7367f023, 0 0.5px 0 #fff2 inset;
       padding: 19px 16px 12px 16px;
-      min-width: 280px;
+      width: 100%;
       max-width: 320px;
-      max-height: 430px;
-      font-size: 1.08em;
+      min-width: 280px;
+      max-height: 500px;
+      font-size: clamp(1rem, 2vw, 1.08rem);
       display: flex;
       flex-direction: column;
       gap: 10px;
       border: 2px solid #7367f01a;
       position: relative;
       z-index: 0;
+      flex-shrink: 0;
     }
+
     .history-title {
       font-weight: 700;
       margin-bottom: 14px;
@@ -407,6 +495,7 @@
       opacity: 1;
       user-select: none;
     }
+
     .history-list {
       display: flex;
       flex-direction: column;
@@ -418,127 +507,152 @@
       scrollbar-width: thin;
       scrollbar-color: #7367f077 #f5f5fa;
     }
+
     .history-list::-webkit-scrollbar {
       width: 7px;
     }
+
     .history-list::-webkit-scrollbar-thumb {
       background: #7367f055;
       border-radius: 8px;
     }
+
     .history-list::-webkit-scrollbar-track {
       background: #f5f5fa;
     }
+
     .history-entry {
       position: relative;
       background: linear-gradient(94deg, #f5f5fa 70%, #e2e2fa 130%);
       border-radius: 13px;
-      padding: 11px 15px 10px 18px;
-      min-height: 54px;
+      padding: 12px 16px;
+      min-height: 60px;
       cursor: pointer;
       transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
       border: 2px solid #7367f01a;
       box-shadow: 0 1.5px 6px #7367f018;
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 12px;
+      flex-direction: column;
+      gap: 8px;
       overflow: visible;
       z-index: 1;
+      touch-action: manipulation;
     }
-    .history-entry:before {
-      content: "";
-      display: block;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      margin-right: 0px;
-      background: linear-gradient(135deg, #7367f0 60%, #a777e3 140%);
-      box-shadow: 0 0 8px #a777e344;
-      flex-shrink: 0;
-      opacity: 0.85;
-    }
+
     .history-entry:hover,
     .history-entry:focus-visible {
       background: linear-gradient(94deg, #e9e7ff 55%, #dcdcf9 130%);
-      transform: scale(1.045) translateX(5px);
+      transform: scale(1.02) translateX(3px);
       box-shadow: 0 2px 12px #7367f045, 0 0 12px #7367f022 inset;
       outline: 2px solid #7367f055;
       border-color: #7367f0bb;
       z-index: 2;
     }
+
+    .history-entry-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .history-entry-main:before {
+      content: "";
+      display: block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7367f0 60%, #a777e3 140%);
+      box-shadow: 0 0 8px #a777e344;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
     .history-expression {
       color: #313131;
-      font-size: 1.01em;
+      font-size: 1em;
       letter-spacing: 0.3px;
       font-weight: 500;
       opacity: 0.88;
-      margin-right: auto;
+      flex: 1;
       word-break: break-all;
-      flex-basis: 55%;
+      min-width: 0;
     }
+
+    .history-result-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
     .history-result {
       color: #fff;
-      font-size: 1.18em;
+      font-size: 1.1em;
       text-align: right;
       font-weight: bold;
       text-shadow: 0 1.5px 2px #7367f0b2;
       letter-spacing: 1.2px;
       background: var(--history-result-bg);
-      border-radius: 8px 16px 16px 8px;
-      padding: 3px 15px 3px 13px;
-      margin-left: 12px;
-      min-width: 60px;
+      border-radius: 8px;
+      padding: 4px 12px;
+      min-width: 50px;
       box-shadow: 0 1.5px 7px #7367f03b;
       border: 1.5px solid #7367f066;
       transition: background 0.18s, box-shadow 0.18s, border 0.18s;
-      flex-shrink: 0;
     }
+
     .history-entry:hover .history-result,
     .history-entry:focus-visible .history-result {
       background: linear-gradient(110deg, #a777e3 60%, #7367f0 140%);
       border-color: #a777e3cc;
     }
+
+    .history-entry-footer {
+      display: flex;
+      justify-content: center; /* Center the "Click to reuse" text */
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .history-entry:hover .history-entry-footer,
+    .history-entry:focus-visible .history-entry-footer {
+      opacity: 1;
+    }
+
     .history-entry-reuse {
-      position: absolute;
-      right: 42px;
-      bottom: 10px;
-      font-size: 0.98em;
+      font-size: 0.85em;
       color: #a777e3;
-      opacity: 0.7;
-      pointer-events: none;
-      user-select: none;
       font-style: italic;
-      letter-spacing: .5px;
-      display: none;
+      letter-spacing: 0.5px;
     }
-    .history-entry:hover .history-entry-reuse,
-    .history-entry:focus-visible .history-entry-reuse {
-      display: block;
-    }
+
     .history-delete-btn {
       background: none;
       border: none;
-      position: absolute;
-      right: 9px;
-      top: 9px;
       color: #e74c3c;
-      font-size: 1.2em;
+      font-size: 1.1em;
       cursor: pointer;
-      padding: 5px 5px 3px 5px;
-      border-radius: 50%;
-      opacity: 0.7;
-      transition: background 0.15s, color 0.12s, opacity 0.11s;
-      z-index: 10;
+      padding: 4px;
+      border-radius: 4px;
+      transition: background 0.15s, color 0.12s;
       outline: none;
       box-shadow: none;
+      min-height: 28px;
+      min-width: 28px;
+      touch-action: manipulation;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
     .history-delete-btn:hover,
     .history-delete-btn:focus-visible {
-      background: #fd9536;
-      color: #fff;
-      opacity: 1;
-      outline: 2px solid #e74c3c44;
+      background: #e74c3c22;
+      color: #c0392b;
     }
+
     .history-empty {
       background: #fcfaff;
       border-radius: 7px;
@@ -551,6 +665,7 @@
       user-select: none;
       border: 1.5px dashed #7367f033;
     }
+
     .history-clear {
       background: linear-gradient(120deg, #e74c3c 70%, #fd9536 120%);
       color: #fff;
@@ -566,20 +681,476 @@
       transition: background 0.16s, transform 0.14s, box-shadow 0.16s;
       display: block;
       border: 2px solid #e74c3c55;
+      touch-action: manipulation;
+      min-height: 44px;
     }
+
     .history-clear:hover,
     .history-clear:focus-visible {
       background: linear-gradient(120deg, #c0392b 75%, #fd9536 120%);
-      transform: scale(1.06) translateY(-2px);
+      transform: scale(1.03) translateY(-1px);
       box-shadow: 0 6px 18px #e74c3c34;
       border-color: #fd9536;
+    }
+
+    .footer {
+      width: 100%;
+      text-align: center;
+      padding: 16px 0 12px 0;
+      font-size: clamp(1rem, 2vw, 1.12rem);
+      font-weight: 500;
+      letter-spacing: 1.1px;
+      color: #fff;
+      margin-top: auto;
+      background: var(--footer-bg);
+      box-shadow: 0 -4px 18px #7367f022;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      user-select: none;
+      position: relative;
+      z-index: 11;
+      opacity: 0.97;
+    }
+
+    .footer .heart {
+      color: #e74c3c;
+      font-size: 1.2em;
+      padding: 0 2px 0 1px;
+      vertical-align: middle;
+      animation: heartbeat 1.4s infinite;
+      display: inline-block;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1);}
+      10% { transform: scale(1.12);}
+      24% { transform: scale(1.20);}
+      33% { transform: scale(1.10);}
+      42% { transform: scale(1.22);}
+      48% { transform: scale(1);}
+      70% { transform: scale(1);}
+    }
+
+    /* Responsive Breakpoints */
+
+    /* Large Tablets and Small Desktops */
+    @media (max-width: 1024px) {
+      :root {
+        --button-size-desktop: var(--button-size-tablet);
+        --button-height-desktop: var(--button-height-tablet);
+        --font-size-desktop: var(--font-size-tablet);
+      }
+
+      .container {
+        max-width: 900px;
+        gap: 20px;
+      }
+
+      .calculator {
+        max-width: 450px;
+      }
+
+      .history-panel {
+        max-width: 300px;
+      }
+    }
+
+    /* Tablets */
+    @media (max-width: 768px) {
+      :root {
+        --header-height: 60px;
+        --container-gap: 16px;
+        --calc-card-radius: 24px;
+      }
+
+      .jcal-header {
+        padding: 0 max(12px, 3vw);
+      }
+
+      #theme-select {
+        padding: 6px 22px 6px 10px;
+        min-width: 85px;
+        margin-left: 8px;
+        font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+        background-position: right 6px center;
+        background-size: 14px;
+      }
+
+      .container {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        margin: 16px auto 30px;
+      }
+
+      .calculator {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .history-panel {
+        max-width: 100%;
+        width: 100%;
+        max-height: 400px;
+        order: -1;
+      }
+
+      .keypad-wrapper {
+        gap: 12px;
+      }
+
+      .numpad, .opspad {
+        gap: 10px;
+        padding: 14px 8px;
+      }
+
+      #instances {
+        padding: 8px 12px;
+        gap: 10px;
+      }
+    }
+
+    /* Mobile Devices */
+    @media (max-width: 480px) {
+      :root {
+        --header-height: 56px;
+        --button-size-mobile: 44px;
+        --button-height-mobile: 42px;
+        --font-size-mobile: 0.95em;
+        --calc-card-radius: 20px;
+      }
+
+      body {
+        padding-bottom: 0;
+      }
+
+      .jcal-header {
+        padding: 0 12px;
+        border-radius: 0 0 16px 16px;
+      }
+
+      .jcal-header-title {
+        font-size: clamp(1.2rem, 5vw, 1.8rem);
+        letter-spacing: 1.5px;
+      }
+
+      #theme-select {
+        padding: 5px 20px 5px 8px;
+        min-width: 75px;
+        margin-left: 6px;
+        border-radius: 10px;
+        background-position: right 5px center;
+        background-size: 12px;
+      }
+
+      .container {
+        margin: 12px 8px 20px;
+        padding: 0 8px;
+        gap: 16px;
+      }
+
+      .calculator {
+        padding: 20px 16px;
+        border-radius: var(--calc-card-radius);
+      }
+
+      .display {
+        font-size: clamp(1.3rem, 5vw, 1.8rem);
+        padding: 16px 12px;
+        margin-bottom: 16px;
+        border-radius: 12px;
+      }
+
+      .memory-row {
+        gap: 6px;
+        padding: 6px;
+        margin-bottom: 10px;
+      }
+
+      .memory-row button {
+        font-size: 0.85rem;
+        padding: 6px 4px;
+        min-height: 36px;
+      }
+
+      .memory-value {
+        font-size: 0.95rem;
+      }
+
+      .keypad-wrapper {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .numpad {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+        gap: 8px;
+        padding: 12px 8px;
+        border-radius: 16px;
+      }
+
+      .opspad {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 8px;
+        padding: 12px 8px;
+        border-radius: 16px;
+      }
+
+      .numpad button, .opspad button {
+        height: var(--button-height-mobile);
+        font-size: var(--font-size-mobile);
+        min-height: 42px;
+        border-radius: 10px;
+      }
+
+      .history-panel {
+        max-height: 300px;
+        padding: 16px 12px;
+        border-radius: 16px;
+      }
+
+      .history-list {
+        max-height: 200px;
+      }
+
+      .history-entry {
+        padding: 10px 12px;
+        border-radius: 10px;
+        min-height: 50px;
+      }
+
+      .history-result {
+        font-size: 1em;
+        padding: 3px 10px;
+      }
+
+      .history-clear {
+        font-size: 1rem;
+        padding: 10px 18px;
+        min-height: 42px;
+      }
+
+      #instances {
+        padding: 6px 8px;
+        gap: 8px;
+      }
+
+      #instances button {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        min-height: 36px;
+      }
+
+      #instance-tabs button {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        min-height: 36px;
+      }
+
+      #theme-select {
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        min-width: 70px;
+      }
+    }
+
+    /* Extra Small Mobile Devices */
+    @media (max-width: 360px) {
+      .calculator {
+        padding: 16px 12px;
+      }
+
+      .display {
+        font-size: 1.4rem;
+        padding: 14px 10px;
+      }
+
+      #theme-select {
+        padding: 4px 16px 4px 6px;
+        min-width: 60px;
+        margin-left: 3px;
+        border-radius: 8px;
+        font-size: clamp(0.75rem, 3vw, 0.8rem);
+        background-position: right 4px center;
+        background-size: 10px;
+        border-width: 1.5px;
+      }
+
+      .memory-row {
+        gap: 4px;
+        padding: 4px;
+      }
+
+      .memory-row button {
+        font-size: 0.8rem;
+        padding: 4px 2px;
+        min-height: 32px;
+      }
+
+      .numpad, .opspad {
+        gap: 6px;
+        padding: 10px 6px;
+      }
+
+      .numpad button, .opspad button {
+        height: 40px;
+        font-size: 0.9rem;
+        min-height: 40px;
+      }
+
+      .history-panel {
+        padding: 14px 10px;
+      }
+
+      .history-entry {
+        padding: 8px 10px;
+        min-height: 46px;
+      }
+
+      #instances {
+        padding: 4px 6px;
+        gap: 6px;
+      }
+    }
+
+    /* Large Screens */
+    @media (min-width: 1200px) {
+      .container {
+        max-width: 1400px;
+        gap: 32px;
+      }
+
+      .calculator {
+        max-width: 520px;
+      }
+
+      .history-panel {
+        max-width: 350px;
+        max-height: 600px;
+      }
+
+      .history-list {
+        max-height: 400px;
+      }
+    }
+
+    /* Focus and accessibility improvements */
+    button:focus-visible {
+      outline: 3px solid #7367f0;
+      outline-offset: 2px;
+    }
+
+    .history-entry:focus-visible {
+      outline: 3px solid #7367f0;
+      outline-offset: 2px;
+    }
+
+    /* Prevent zoom on mobile input focus */
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+      select, input, textarea {
+        font-size: 16px;
+      }
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      button {
+        border-width: 3px;
+      }
+
+      #theme-select {
+        border-width: 3px;
+        border-color: currentColor;
+      }
+      
+      .display {
+        border-width: 3px;
+      }
+      
+      .history-entry {
+        border-width: 3px;
+      }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      #theme-select {
+        transition: none;
+      }
+      
+      .heart {
+        animation: none !important;
+      }
+    }
+
+    /* Touch improvements */
+    @media (hover: none) and (pointer: coarse) {
+      button:hover {
+        transform: none;
+        filter: none;
+      }
+      
+      button:active {
+        transform: scale(0.95);
+        opacity: 0.8;
+      }
+      
+      .history-entry:hover {
+        transform: none;
+      }
+      
+      .history-entry:active {
+        transform: scale(0.98);
+      }
+    }
+
+    /* Keyboard navigation improvements */
+    @keyframes kbd-bounce {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.08); }
+      60%  { transform: scale(0.95);}
+      100% { transform: scale(1);}
+    }
+    
+    .kbd-bounce { 
+      animation: kbd-bounce 0.16s; 
+    }
+
+    /* Print styles */
+    @media print {
+      .jcal-header,
+      .footer,
+      #instances,
+      .history-panel {
+        display: none;
+      }
+      
+      .container {
+        grid-template-columns: 1fr;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .calculator {
+        box-shadow: none;
+        border: 2px solid #000;
+      }
     }
   </style>
 </head>
 <body>
   <div class="jcal-header">
+    <h1 class="jcal-header-title">JCal</h1>
     <div>
-      <select id="theme-select">
+      <select id="theme-select" aria-label="Theme selector">
         <option value="default">Default</option>
         <option value="light">Light</option>
         <option value="dark">Dark</option>
@@ -587,150 +1158,187 @@
       </select>
     </div>
   </div>
-  <div id="instances">
-    <button onclick="addInstance()">+ New Instance</button>
+  
+  <div id="instances" role="tablist" aria-label="Calculator instances">
+    <button onclick="addInstance()" aria-label="Add new calculator instance">+ New Instance</button>
     <div id="instance-tabs"></div>
   </div>
+  
   <div class="container">
     <div class="calculator" role="region" aria-label="Calculator">
-      <div class="display" id="display" aria-live="polite" tabindex="0">0</div>
-      <div class="memory-row">
-        <button onclick="memoryAdd()">M+</button>
-        <button onclick="memorySubtract()">M-</button>
-        <button onclick="memoryRecall()">MR</button>
-        <button onclick="memoryClear()">MC</button>
-        <span class="memory-value" id="memory-value">0</span>
+      <div class="display" id="display" aria-live="polite" tabindex="0" aria-label="Calculator display">0</div>
+      
+      <div class="memory-row" role="group" aria-label="Memory functions">
+        <button onclick="memoryAdd()" aria-label="Add to memory" title="Memory Add">M+</button>
+        <button onclick="memorySubtract()" aria-label="Subtract from memory" title="Memory Subtract">M-</button>
+        <button onclick="memoryRecall()" aria-label="Recall memory" title="Memory Recall">MR</button>
+        <button onclick="memoryClear()" aria-label="Clear memory" title="Memory Clear">MC</button>
+        <span class="memory-value" id="memory-value" aria-label="Memory value">0</span>
       </div>
+      
       <div class="keypad-wrapper">
-        <div class="numpad">
-          <button onclick="press('7')">7</button>
-          <button onclick="press('8')">8</button>
-          <button onclick="press('9')">9</button>
-          <button onclick="press('4')">4</button>
-          <button onclick="press('5')">5</button>
-          <button onclick="press('6')">6</button>
-          <button onclick="press('1')">1</button>
-          <button onclick="press('2')">2</button>
-          <button onclick="press('3')">3</button>
-          <button onclick="press('0')">0</button>
-          <button onclick="press('.')">.</button>
-          <button class="function" onclick="press('pi')" title="Pi">π</button>
-          <button class="function" onclick="press('sqrt(')" title="Square Root">√</button>
-          <button class="function" onclick="press('sin(')" title="Sine">sin</button>
-          <button class="function" onclick="press('cos(')" title="Cosine">cos</button>
-          <button class="function" onclick="press('tan(')" title="Tangent">tan</button>
-          <button class="function" onclick="press('log(')" title="Logarithm">log</button>
-          <button class="function" onclick="press('ln(')" title="Natural Log">ln</button>
-          <button class="operator" onclick="press('+')" title="Add">+</button>
-          <button class="operator" onclick="press('^')" title="Exponent">^</button>
-          <button class="operator" onclick="press('-')" title="Subtract">−</button>
+        <div class="numpad" role="grid" aria-label="Number pad and functions">
+          <button onclick="press('7')" aria-label="Seven">7</button>
+          <button onclick="press('8')" aria-label="Eight">8</button>
+          <button onclick="press('9')" aria-label="Nine">9</button>
+          <button onclick="press('4')" aria-label="Four">4</button>
+          <button onclick="press('5')" aria-label="Five">5</button>
+          <button onclick="press('6')" aria-label="Six">6</button>
+          <button onclick="press('1')" aria-label="One">1</button>
+          <button onclick="press('2')" aria-label="Two">2</button>
+          <button onclick="press('3')" aria-label="Three">3</button>
+          <button onclick="press('0')" aria-label="Zero">0</button>
+          <button onclick="press('.')" aria-label="Decimal point">.</button>
+          <button class="function" onclick="press('pi')" title="Pi" aria-label="Pi">π</button>
+          <button class="function" onclick="press('sqrt(')" title="Square Root" aria-label="Square root">√</button>
+          <button class="function" onclick="press('sin(')" title="Sine" aria-label="Sine">sin</button>
+          <button class="function" onclick="press('cos(')" title="Cosine" aria-label="Cosine">cos</button>
+          <button class="function" onclick="press('tan(')" title="Tangent" aria-label="Tangent">tan</button>
+          <button class="function" onclick="press('log(')" title="Logarithm" aria-label="Logarithm">log</button>
+          <button class="function" onclick="press('ln(')" title="Natural Log" aria-label="Natural logarithm">ln</button>
+          <button class="operator" onclick="press('+')" title="Add" aria-label="Add">+</button>
+          <button class="operator" onclick="press('^')" title="Exponent" aria-label="Power">^</button>
+          <button class="operator" onclick="press('-')" title="Subtract" aria-label="Subtract">−</button>
         </div>
-        <div class="opspad">
-          <button class="clear" onclick="clearDisplay()" title="Clear">C</button>
-          <button class="back" onclick="backspace()" title="Backspace">⌫</button>
-          <button class="operator" onclick="press('(')" title="Left Parenthesis">(</button>
-          <button class="operator" onclick="press(')')" title="Right Parenthesis">)</button>
-          <button class="operator" onclick="press('/')" title="Divide">÷</button>
-          <button class="operator" onclick="press('*')" title="Multiply">×</button>
-          <button class="equal" onclick="calculate()" title="Equals">=</button>
+        
+        <div class="opspad" role="grid" aria-label="Operations">
+          <button class="clear" onclick="clearDisplay()" title="Clear" aria-label="Clear all">C</button>
+          <button class="back" onclick="backspace()" title="Backspace" aria-label="Backspace">⌫</button>
+          <button class="operator" onclick="press('(')" title="Left Parenthesis" aria-label="Open parenthesis">(</button>
+          <button class="operator" onclick="press(')')" title="Right Parenthesis" aria-label="Close parenthesis">)</button>
+          <button class="operator" onclick="press('/')" title="Divide" aria-label="Divide">÷</button>
+          <button class="operator" onclick="press('*')" title="Multiply" aria-label="Multiply">×</button>
+          <button class="equal" onclick="calculate()" title="Equals" aria-label="Calculate">=</button>
         </div>
       </div>
     </div>
-    <div class="history-panel" id="history-panel">
+    
+    <div class="history-panel" id="history-panel" role="region" aria-label="Calculation history">
       <div class="history-title">History</div>
-      <div class="history-list" id="history-list"></div>
-      <button class="history-clear" onclick="clearHistory()">Clear History</button>
+      <div class="history-list" id="history-list" role="log" aria-live="polite"></div>
+      <button class="history-clear" onclick="clearHistory()" aria-label="Clear all history">Clear History</button>
     </div>
   </div>
+  
   <div class="footer">
-    Made with <span class="heart">♥</span> 2LazyDevs
+    Made with <span class="heart" aria-hidden="true">♥</span> 2LazyDevs
   </div>
+
   <script>
-    // THEME
+    // THEME MANAGEMENT
     const themeSelect = document.getElementById('theme-select');
     themeSelect.onchange = (e) => {
       document.body.setAttribute('data-theme', e.target.value);
       localStorage.setItem('theme', e.target.value);
     };
-    document.body.setAttribute('data-theme', localStorage.getItem('theme') || 'default');
-    themeSelect.value = localStorage.getItem('theme') || 'default';
+    
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    document.body.setAttribute('data-theme', savedTheme);
+    themeSelect.value = savedTheme;
 
-    // INSTANCE SWITCHER WITH DELETE SUPPORT
+    // INSTANCE MANAGEMENT WITH DELETE SUPPORT
     let instances = JSON.parse(localStorage.getItem('instances') || '["Default"]');
     let currentInstance = Number(localStorage.getItem('currentInstance') || 0);
+    
     function addInstance() {
-      const name = prompt("Instance name?", "Science");
-      if (name) {
-        instances.push(name);
+      const name = prompt("Enter instance name:", "Science");
+      if (name && name.trim()) {
+        instances.push(name.trim());
         localStorage.setItem('instances', JSON.stringify(instances));
         renderInstanceTabs();
       }
     }
+    
     function renderInstanceTabs() {
       const tabs = document.getElementById('instance-tabs');
       tabs.innerHTML = '';
+      
       instances.forEach((inst, i) => {
-        const tab = document.createElement('span');
-        tab.style.display = 'inline-flex';
-        tab.style.alignItems = 'center';
+        const tabContainer = document.createElement('span');
+        tabContainer.style.display = 'inline-flex';
+        tabContainer.style.alignItems = 'center';
+        
         const btn = document.createElement('button');
         btn.textContent = inst;
         btn.className = i === currentInstance ? "active" : "";
-        btn.onclick = () => {
-          currentInstance = i;
-          localStorage.setItem('currentInstance', i);
-          loadInstance();
-          renderInstanceTabs();
-        };
-        tab.appendChild(btn);
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', i === currentInstance ? 'true' : 'false');
+        btn.setAttribute('aria-label', `Switch to ${inst} calculator`);
+        btn.onclick = () => switchInstance(i);
+        
+        tabContainer.appendChild(btn);
 
-        // Don't allow delete for Default or if only one instance remains
+        // Add delete button (except for Default and when only one instance exists)
         if (inst !== "Default" && instances.length > 1) {
           const delBtn = document.createElement('button');
-          delBtn.textContent = "🗑️";
+          delBtn.innerHTML = "🗑️";
           delBtn.className = "delete-instance-btn";
-          delBtn.title = "Delete this instance";
-          delBtn.onclick = (e) => {
-            e.stopPropagation();
-            // Remove instance and its data
-            let removed = instances.splice(i, 1);
-            localStorage.setItem('instances', JSON.stringify(instances));
-            // Remove history/memory from storage
-            localStorage.removeItem(`instance${i}_history`);
-            localStorage.removeItem(`instance${i}_memory`);
-            // Re-index data for remaining instances
-            for (let j = i + 1; j <= instances.length; j++) {
-              let h = localStorage.getItem(`instance${j}_history`);
-              let m = localStorage.getItem(`instance${j}_memory`);
-              if (h !== null) {
-                localStorage.setItem(`instance${j-1}_history`, h);
-                localStorage.removeItem(`instance${j}_history`);
-              }
-              if (m !== null) {
-                localStorage.setItem(`instance${j-1}_memory`, m);
-                localStorage.removeItem(`instance${j}_memory`);
-              }
-            }
-            // If current deleted, switch to first
-            if (currentInstance === i) {
-              currentInstance = 0;
-              localStorage.setItem('currentInstance', 0);
-            } else if (currentInstance > i) {
-              // Adjust index if after deleted
-              currentInstance--;
-              localStorage.setItem('currentInstance', currentInstance);
-            }
-            renderInstanceTabs();
-            loadInstance();
-          };
-          tab.appendChild(delBtn);
+          delBtn.setAttribute('aria-label', `Delete ${inst} instance`);
+          delBtn.title = `Delete ${inst} instance`;
+          delBtn.onclick = (e) => deleteInstance(e, i);
+          tabContainer.appendChild(delBtn);
         }
-        tabs.appendChild(tab);
+        
+        tabs.appendChild(tabContainer);
       });
     }
+    
+    function switchInstance(index) {
+      currentInstance = index;
+      localStorage.setItem('currentInstance', index);
+      loadInstance();
+      renderInstanceTabs();
+    }
+    
+    function deleteInstance(e, index) {
+      e.stopPropagation();
+      
+      if (!confirm(`Delete "${instances[index]}" instance and all its data?`)) {
+        return;
+      }
+      
+      // Remove instance and its data
+      instances.splice(index, 1);
+      localStorage.setItem('instances', JSON.stringify(instances));
+      
+      // Remove stored data
+      localStorage.removeItem(`instance${index}_history`);
+      localStorage.removeItem(`instance${index}_memory`);
+      
+      // Re-index remaining instance data
+      for (let j = index + 1; j <= instances.length; j++) {
+        const historyKey = `instance${j}_history`;
+        const memoryKey = `instance${j}_memory`;
+        
+        const historyData = localStorage.getItem(historyKey);
+        const memoryData = localStorage.getItem(memoryKey);
+        
+        if (historyData !== null) {
+          localStorage.setItem(`instance${j-1}_history`, historyData);
+          localStorage.removeItem(historyKey);
+        }
+        if (memoryData !== null) {
+          localStorage.setItem(`instance${j-1}_memory`, memoryData);
+          localStorage.removeItem(memoryKey);
+        }
+      }
+      
+      // Adjust current instance index
+      if (currentInstance === index) {
+        currentInstance = 0;
+      } else if (currentInstance > index) {
+        currentInstance--;
+      }
+      
+      localStorage.setItem('currentInstance', currentInstance);
+      renderInstanceTabs();
+      loadInstance();
+    }
+    
     renderInstanceTabs();
 
-    // CALCULATOR, MEMORY, HISTORY
+    // CALCULATOR CORE FUNCTIONALITY
     let display = document.getElementById('display');
     let historyList = document.getElementById('history-list');
     let memoryValue = document.getElementById('memory-value');
@@ -738,79 +1346,119 @@
     let lastInput = '';
     let history = [];
     let memory = 0;
+    
     function instanceKey(key) {
       return `instance${currentInstance}_${key}`;
     }
+    
     function saveInstance() {
       localStorage.setItem(instanceKey('history'), JSON.stringify(history));
       localStorage.setItem(instanceKey('memory'), memory);
     }
+    
     function loadInstance() {
       history = JSON.parse(localStorage.getItem(instanceKey('history')) || '[]');
       memory = Number(localStorage.getItem(instanceKey('memory')) || 0);
       memoryValue.textContent = memory;
       renderHistory();
+      
+      // Reset calculator state
+      expression = '';
+      lastInput = '';
+      updateDisplay('0');
     }
+    
     loadInstance();
 
-    // Memory functions
-    function memoryAdd() { memory += parseFloat(display.innerText)||0; memoryValue.textContent = memory; saveInstance();}
-    function memorySubtract() { memory -= parseFloat(display.innerText)||0; memoryValue.textContent = memory; saveInstance();}
-    function memoryRecall() { updateDisplay(memory); }
-    function memoryClear() { memory = 0; memoryValue.textContent = memory; saveInstance(); }
-
-    // Button effects
-    document.querySelectorAll('.numpad button, .opspad button, .history-clear, .memory-row button').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        let oldRipple = btn.querySelector('.ripple');
-        if (oldRipple) oldRipple.remove();
-        let ripple = document.createElement('span');
-        ripple.className = 'ripple';
-        let rect = btn.getBoundingClientRect();
-        let size = Math.max(rect.width, rect.height);
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-        ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-        btn.appendChild(ripple);
-        ripple.addEventListener('animationend', () => ripple.remove());
-        btn.classList.remove('pulse');
-        void btn.offsetWidth;
-        btn.classList.add('pulse');
-      });
-      btn.addEventListener('keydown', function(e) {
-        if ([' ', 'Enter'].includes(e.key)) {
-          btn.classList.add('kbd-bounce');
-        }
-      });
-      btn.addEventListener('animationend', function(e) {
-        if (e.animationName === 'kbd-bounce') {
-          btn.classList.remove('kbd-bounce');
-        }
-      });
-    });
-    const style = document.createElement('style');
-    style.innerHTML = `
-    @keyframes kbd-bounce {
-      0%   { transform: scale(1); }
-      30%  { transform: scale(1.11); }
-      60%  { transform: scale(0.90);}
-      100% { transform: scale(1);}
+    // MEMORY FUNCTIONS
+    function memoryAdd() { 
+      memory += parseFloat(display.innerText) || 0; 
+      memoryValue.textContent = memory; 
+      saveInstance();
     }
-    .kbd-bounce { animation: kbd-bounce 0.16s; }
-    `;
-    document.head.appendChild(style);
+    
+    function memorySubtract() { 
+      memory -= parseFloat(display.innerText) || 0; 
+      memoryValue.textContent = memory; 
+      saveInstance();
+    }
+    
+    function memoryRecall() { 
+      updateDisplay(memory); 
+      expression = memory.toString();
+      lastInput = '';
+    }
+    
+    function memoryClear() { 
+      memory = 0; 
+      memoryValue.textContent = memory; 
+      saveInstance(); 
+    }
 
+    // BUTTON VISUAL EFFECTS
+    function addButtonEffects() {
+      document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          // Remove old ripple
+          let oldRipple = btn.querySelector('.ripple');
+          if (oldRipple) oldRipple.remove();
+          
+          // Create ripple effect
+          let ripple = document.createElement('span');
+          ripple.className = 'ripple';
+          let rect = btn.getBoundingClientRect();
+          let size = Math.max(rect.width, rect.height);
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+          ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+          btn.appendChild(ripple);
+          
+          ripple.addEventListener('animationend', () => ripple.remove());
+          
+          // Pulse effect
+          btn.classList.remove('pulse');
+          void btn.offsetWidth; // Force reflow
+          btn.classList.add('pulse');
+        });
+        
+        btn.addEventListener('keydown', function(e) {
+          if ([' ', 'Enter'].includes(e.key)) {
+            btn.classList.add('kbd-bounce');
+          }
+        });
+        
+        btn.addEventListener('animationend', function(e) {
+          if (e.animationName === 'kbd-bounce') {
+            btn.classList.remove('kbd-bounce');
+          }
+        });
+      });
+    }
+    
+    // Initialize button effects
+    addButtonEffects();
+
+    // DISPLAY FUNCTIONS
     function updateDisplay(val = expression) {
       display.innerText = val || '0';
+      // Auto-scroll to the right for long expressions
+      display.scrollLeft = display.scrollWidth;
     }
+    
     function press(value) {
-      if (display.innerText === 'Error') {
+      if (display.innerText === 'Error' || display.innerText === 'undefined') {
         expression = '';
+        lastInput = '';
       }
+      
       const operators = ['+', '-', '*', '/', '^'];
+      
+      // Prevent consecutive operators
       if (operators.includes(value)) {
         if (expression === '' || operators.includes(lastInput) || lastInput === '(') return;
       }
+      
+      // Handle decimal point
       if (value === '.') {
         const parts = expression.split(/[\+\-\*\/\(\)\^]/);
         if (parts[parts.length - 1].includes('.')) return;
@@ -818,28 +1466,48 @@
           expression += '0';
         }
       }
+      
+      // Handle opening parenthesis
       if (value === '(') {
-        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) expression += '*';
+        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) {
+          expression += '*';
+        }
       }
+      
+      // Handle closing parenthesis
       if (value === ')') {
-        if ((expression.match(/\(/g) || []).length <= (expression.match(/\)/g) || []).length) return;
+        const openCount = (expression.match(/\(/g) || []).length;
+        const closeCount = (expression.match(/\)/g) || []).length;
+        if (openCount <= closeCount) return;
         if (operators.includes(lastInput) || lastInput === '(' || lastInput === '') return;
       }
-      if (/^(sqrt|sin|cos|tan|log|ln)$/.test(value.replace('(',''))) {
-        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) expression += '*';
+      
+      // Handle functions
+      if (/^(sqrt|sin|cos|tan|log|ln)$/.test(value.replace('(', ''))) {
+        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) {
+          expression += '*';
+        }
       }
+      
+      // Handle pi
       if (value === 'pi') {
-        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) expression += '*';
+        if (lastInput && (!isNaN(lastInput) || lastInput === ')' || lastInput === 'π')) {
+          expression += '*';
+        }
         value = 'π';
       }
+      
       expression += value;
       lastInput = value.endsWith('(') ? '(' : value.slice(-1);
       updateDisplay();
     }
-    // Handle tan(90) and similar cases (odd multiples of 90)
+    
+    // Handle tangent singularities (odd multiples of 90 degrees)
     function isTanSingular(expr) {
       let regex = /tan\s*\(\s*([^\)]+)\s*\)/g;
-      let match; while ((match = regex.exec(expr)) !== null) {
+      let match;
+      
+      while ((match = regex.exec(expr)) !== null) {
         let argStr = match[1];
         try {
           let arg = math.evaluate(argStr);
@@ -848,30 +1516,55 @@
       }
       return false;
     }
+    
     function calculate() {
       try {
         if (expression === '') return;
-        if ((expression.match(/\(/g) || []).length !== (expression.match(/\)/g) || []).length) {
-          display.innerText = 'Error'; expression = ''; return;
+        
+        // Check parentheses balance
+        const openParens = (expression.match(/\(/g) || []).length;
+        const closeParens = (expression.match(/\)/g) || []).length;
+        
+        if (openParens !== closeParens) {
+          display.innerText = 'Error';
+          expression = '';
+          return;
         }
+        
+        // Convert expression for math.js
         let mathExpr = expression
           .replace(/π/g, 'pi')
           .replace(/÷/g, '/')
           .replace(/×/g, '*')
           .replace(/√/g, 'sqrt')
-          .replace(/(\d+)\s*([a-zA-Z])/g, '$1*$2')
+          .replace(/(\d+)\s*([a-zA-Z])/g, '$1*$2') // Implicit multiplication
           .replace(/\^/g, '**');
+        
+        // Convert trigonometric functions to use degrees
         mathExpr = mathExpr.replace(/sin\(([^)]+)\)/g, 'sin(deg2rad($1))');
         mathExpr = mathExpr.replace(/cos\(([^)]+)\)/g, 'cos(deg2rad($1))');
         mathExpr = mathExpr.replace(/tan\(([^)]+)\)/g, 'tan(deg2rad($1))');
+        
+        // Import degree to radian conversion
         math.import({
           deg2rad: function(deg) { return deg * Math.PI / 180; }
         }, {override: true});
+        
+        // Check for tangent singularities
         if (isTanSingular(expression)) {
-          display.innerText = 'undefined'; expression = ''; lastInput = ''; return;
+          display.innerText = 'undefined';
+          expression = '';
+          lastInput = '';
+          return;
         }
+        
         let result = math.evaluate(mathExpr);
-        if (typeof result === 'number') result = +result.toFixed(10);
+        
+        // Format result
+        if (typeof result === 'number') {
+          result = +result.toFixed(10);
+        }
+        
         if (result === Infinity || isNaN(result)) {
           display.innerText = 'Error';
         } else {
@@ -879,31 +1572,64 @@
           addToHistory(expression, result);
           expression = result.toString();
         }
+        
         lastInput = '';
       } catch {
-        display.innerText = 'Error'; expression = ''; lastInput = '';
+        display.innerText = 'Error';
+        expression = '';
+        lastInput = '';
       }
     }
-    function clearDisplay() { expression = ''; lastInput = ''; updateDisplay(); }
+    
+    function clearDisplay() {
+      expression = '';
+      lastInput = '';
+      updateDisplay('0');
+    }
+    
     function backspace() {
       if (display.innerText === 'Error' || display.innerText === 'undefined') {
-        clearDisplay(); return;
+        clearDisplay();
+        return;
       }
-      let funcs = ['sqrt(', 'sin(', 'cos(', 'tan(', 'log(', 'ln('];
-      for (let f of funcs) {
-        if (expression.endsWith(f)) {
-          expression = expression.slice(0, -f.length); lastInput = expression.slice(-1); updateDisplay(); return;
+      
+      // Handle multi-character functions
+      const functions = ['sqrt(', 'sin(', 'cos(', 'tan(', 'log(', 'ln('];
+      for (let func of functions) {
+        if (expression.endsWith(func)) {
+          expression = expression.slice(0, -func.length);
+          lastInput = expression.slice(-1);
+          updateDisplay();
+          return;
         }
       }
+      
+      // Handle pi
       if (expression.endsWith('π')) {
-        expression = expression.slice(0, -1); lastInput = expression.slice(-1); updateDisplay(); return;
+        expression = expression.slice(0, -1);
+        lastInput = expression.slice(-1);
+        updateDisplay();
+        return;
       }
-      expression = expression.slice(0, -1); lastInput = expression.slice(-1); updateDisplay();
+      
+      // Handle single character
+      expression = expression.slice(0, -1);
+      lastInput = expression.slice(-1);
+      updateDisplay();
     }
+
+    // KEYBOARD SUPPORT
     window.addEventListener('keydown', function(e) {
+      // Prevent default for calculator keys
+      const calcKeys = ['0','1','2','3','4','5','6','7','8','9','+','-','*','/','=','Enter','.','(',')','^','c','C','Backspace'];
+      if (calcKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+      
+      // Handle key presses
       if (e.key >= '0' && e.key <= '9') press(e.key);
       else if (['+', '-', '*', '/', '^'].includes(e.key)) press(e.key);
-      else if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); calculate(); }
+      else if (e.key === 'Enter' || e.key === '=') calculate();
       else if (e.key === '.') press('.');
       else if (e.key === '(') press('(');
       else if (e.key === ')') press(')');
@@ -918,60 +1644,99 @@
       else if (e.key.toLowerCase() === 'o') press('cos(');
     });
 
+    // HISTORY MANAGEMENT
     function addToHistory(expr, res) {
       if (typeof res === "undefined" || res === "") return;
+      
       history.push({expr, res});
       if (history.length > 50) history.shift();
       saveInstance();
       renderHistory();
     }
+    
     function renderHistory() {
       historyList.innerHTML = "";
+      
       if (!history.length) {
         let emptyNote = document.createElement('div');
         emptyNote.className = 'history-empty';
-        emptyNote.innerHTML = 'No history yet';
+        emptyNote.textContent = 'No history yet';
         historyList.appendChild(emptyNote);
         return;
       }
+      
       history.slice().reverse().forEach(({expr, res}, idx) => {
         let div = document.createElement('div');
         div.className = 'history-entry';
         div.tabIndex = 0;
-        div.setAttribute('title', 'Click to reuse');
+        div.setAttribute('role', 'button');
+        div.setAttribute('aria-label', `Reuse calculation: ${expr} equals ${res}`);
+        div.title = 'Click to reuse this calculation';
+        
+        // Updated history entry HTML structure
         div.innerHTML = `
-          <span class="history-expression">${expr}</span>
-          <span class="history-result">${res}</span>
-          <span class="history-entry-reuse">Click to reuse</span>
-          <button class="history-delete-btn" title="Delete">&#128465;</button>
+          <div class="history-entry-main">
+            <span class="history-expression">${expr}</span>
+            <div class="history-result-container">
+              <span class="history-result">${res}</span>
+              <button class="history-delete-btn" title="Delete this entry" aria-label="Delete this history entry">&#128465;</button>
+            </div>
+          </div>
+          <div class="history-entry-footer">
+            <span class="history-entry-reuse">Click to reuse</span>
+          </div>
         `;
+        
+        // Click to reuse
         div.onclick = (e) => {
-          if (e.target.classList.contains('history-delete-btn')) return;
+          if (e.target.classList.contains('history-delete-btn') || 
+              e.target.closest('.history-delete-btn')) return;
+          
           expression = expr;
           lastInput = expr.slice(-1);
           updateDisplay(expr);
-          div.animate([
-            { background: '#e9e7ff' },
-            { background: '#f5f5fa' }
-          ], { duration: 260, fill: 'forwards' });
+          
+          // Visual feedback
+          div.style.background = '#e9e7ff';
+          setTimeout(() => {
+            div.style.background = '';
+          }, 300);
         };
+        
+        // Keyboard support
         div.onkeydown = (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
-            div.click();
             e.preventDefault();
+            div.click();
           }
-        }
-        div.querySelector('.history-delete-btn').onclick = (e) => {
+        };
+        
+        // Delete button
+        const deleteBtn = div.querySelector('.history-delete-btn');
+        deleteBtn.onclick = (e) => {
           e.stopPropagation();
           let realIdx = history.length - 1 - idx;
           history.splice(realIdx, 1);
           saveInstance();
           renderHistory();
         };
+        
         historyList.appendChild(div);
       });
     }
-    function clearHistory() { history = []; saveInstance(); renderHistory(); }
+    
+    function clearHistory() {
+      if (history.length === 0) return;
+      
+      if (confirm('Clear all calculation history?')) {
+        history = [];
+        saveInstance();
+        renderHistory();
+      }
+    }
+
+    // Initialize display
+    updateDisplay('0');
   </script>
 </body>
 </html>
