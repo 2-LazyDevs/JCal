@@ -1728,7 +1728,7 @@
     function clearHistory() {
       if (history.length === 0) return;
       
-      if (confirm('Clear all calculation history?')) {
+      if (confirm('Do you want to clear all of your calculation history?')) {
         history = [];
         saveInstance();
         renderHistory();
@@ -1741,3 +1741,4 @@
 </body>
 
 </html>
+
